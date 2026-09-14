@@ -1,1 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>For Alishba</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Parisienne&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-1:#1b0f24;
+    --bg-2:#3a1730;
+    --bg-3:#6b2646;
+    --gold:#e8b384;
+    --blush:#f3c6d1;
+    --seal:#8c2f4a;
+    --cream:#fbeee6;
+    --muted:#d8b9c3;
+  }
 
+  *{ box-sizing:border-box; margin:0; padding:0; }
+
+  html,body{ height:100%; }
+
+  body{
+    font-family:'Inter', sans-serif;
+    color:var(--cream);
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:32px 20px;
+    background:
+      radial-gradient(circle at 30% 15%, rgba(232,179,132,0.16), transparent 55%),
+      radial-gradient(circle at 75% 80%, rgba(139,47,74,0.35), transparent 55%),
+      linear-gradient(160deg, var(--bg-1) 0%, var(--bg-2) 55%, var(--bg-3) 100%);
+    position:relative;
+    overflow-x:hidden;
+  }
+
+  #fireflies{
+    position:fixed;
+    inset:0;
+    width:100vw;
+    height:100vh;
+    pointer-events:none;
+    z-index:0;
+  }
+
+  .stage{
+    position:relative;
+    z-index:1;
+    width:100%;
+    max-width:520px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
+
+  /* Envelope */
+  .envelope{
+    position:relative;
+    width:230px;
+    height:150px;
+    cursor:pointer;
+    margin-bottom:14px;
+    transition:opacity .5s ease, transform .5s ease;
+    animation:settle .9s ease both;
+  }
+
+  .envelope:focus-visible{ outline:2px solid var(--gold); outline-offset:6px; border-radius:8px; }
+
+  @keyframes settle{
+    from{ opacity:0; transform:translateY(14px) scale(.96); }
+    to{ opacity:1; transform:translateY(0) scale(1); }
+  }
+
+  .envelope-back{
+    position:absolute; inset:0;
+    background:linear-gradient(160deg, var(--blush), var(--gold));
+    border-radius:8px;
+    box-shadow:0 22px 46px rgba(0,0,0,.45);
+  }
+
+  .envelope-front{
+    position:absolute; inset:0;
+    clip-path:polygon(0 100%, 50% 48%, 100% 100%);
+    background:linear-gradient(165deg, #f6d9cd, #e2a377);
+    border-radius:0 0 8px 8px;
+    z-index:2;
+  }
+
+  .envelope-flap{
+    position:absolute; top:0; left:0;
+    width:100%; height:56%;
+    background:linear-gradient(160deg, var(--gold), var(--seal));
+    clip-path:polygon(0 0, 100% 0, 50% 100%);
+    transform-origin:top center;
+    transition:transform .85s cubic-bezier(.45,0,.2,1);
+    border-radius:8px 8px 0 0;
+    z-index:3;
+  }
+
+  .envelope.open .envelope-flap{ transform:rotateX(180deg); }
+
+  .seal{
+    position:absolute; left:50%; top:36%;
+    transform:translate(-50%,-50%);
+    width:42px; height:42px; border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, #c1476a, var(--seal));
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Parisienne', cursive;
+    font-size:1.3rem; color:#f6d9cd;
+    box-shadow:0 4px 10px rgba(0,0,0,.4), inset 0 0 6px rgba(0,0,0,.35);
+    z-index:4;
+    transition:opacity .35s ease, transform .35s ease;
+  }
+
+  .envelope.open .seal{ opacity:0; transform:translate(-50%,-50%) scale(.4); }
+
+  .envelope-hint{
+    text-align:center;
+    margin-top:12px;
+    font-size:.82rem;
+    color:var(--muted);
+    letter-spacing:.02em;
+  }
+
+  .envelope.hidden{ opacity:0; pointer-events:none; }
+
+  /* Letter */
+  .letter{
+    width:100%;
+    opacity:0;
+    transform:translateY(20px);
+    pointer-events:none;
+    transition:opacity .8s ease, transform .8s ease;
+    background:rgba(20,10,22,.55);
+    border:1px solid rgba(232,179,132,.25);
+    border-radius:22px;
+    padding:38px 30px;
+    backdrop-filter:blur(14px);
+    box-shadow:0 26px 60px rgba(0,0,0,.5);
+  }
+
+  .letter.visible{ opacity:1; transform:translateY(0); pointer-events:auto; }
+
+  .greeting{
+    font-family:'Parisienne', cursive;
+    font-size:1.9rem;
+    color:var(--gold);
+    margin-bottom:16px;
+  }
+
+  .letter-body{
+    font-family:'Playfair Display', serif;
+    font-style:italic;
+    font-size:1.06rem;
+    line-height:1.85;
+    max-width:46ch;
+    color:var(--cream);
+    min-height:170px;
+  }
+
+  .cursor{
+    display:inline-block;
+    width:1px;
+    background:var(--gold);
+    margin-left:1px;
+    animation:blink 1s steps(1) infinite;
+  }
+
+  @keyframes blink{ 50%{ opacity:0; } }
+
+  /* Reasons */
+  .reasons{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:14px;
+    margin:30px 0 8px;
+    opacity:0;
+    transform:translateY(10px);
+    transition:opacity .6s ease, transform .6s ease;
+    perspective:800px;
+  }
+
+  .reasons.visible{ opacity:1; transform:translateY(0); }
+
+  .reason-nav{
+    background:none;
+    border:1px solid rgba(232,179,132,.4);
+    color:var(--gold);
+    width:34px; height:34px;
+    border-radius:50%;
+    font-size:1.1rem;
+    cursor:pointer;
+    flex-shrink:0;
+    transition:background .2s ease, transform .2s ease;
+  }
+
+  .reason-nav:hover{ background:rgba(232,179,132,.12); transform:scale(1.06); }
+
+  .reason-card{
+    flex:1;
+    min-height:88px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding:14px 10px;
+    border-radius:14px;
+    background:rgba(232,179,132,.07);
+    border:1px solid rgba(232,179,132,.18);
+    transition:transform .3s ease;
+  }
+
+  .reason-card.flip{ transform:rotateY(90deg); }
+
+  .reason-label{
+    font-size:.75rem;
+    color:var(--muted);
+    margin-bottom:6px;
+  }
+
+  .reason-text{
+    font-family:'Playfair Display', serif;
+    font-size:.98rem;
+    color:var(--cream);
+  }
+
+  /* Heart button */
+  .heart-wrap{
+    position:relative;
+    display:flex;
+    justify-content:center;
+    margin:32px 0 26px;
+  }
+
+  .heart-btn{
+    background:none;
+    border:none;
+    cursor:pointer;
+    padding:6px;
+  }
+
+  .heart-shape{
+    display:block;
+    width:64px; height:56px;
+    background:linear-gradient(135deg, var(--seal), var(--gold));
+    clip-path:path("M32,54 C10,40 -4,18 14,7 C23,2 32,7 32,16 C32,7 41,2 50,7 C68,18 54,40 32,54 Z");
+    box-shadow:0 0 24px rgba(232,179,132,.45);
+    transition:transform .25s ease;
+  }
+
+  .heart-btn:hover .heart-shape{ transform:scale(1.08); }
+  .heart-btn:active .heart-shape{ transform:scale(.92); }
+
+  .spark{
+    position:absolute;
+    bottom:20px;
+    font-size:1rem;
+    pointer-events:none;
+    animation:rise 1.4s ease-out forwards;
+  }
+
+  @keyframes rise{
+    0%{ opacity:1; transform:translate(0,0) scale(1); }
+    100%{ opacity:0; transform:translate(var(--dx), -90px) scale(.6); }
+  }
+
+  .signature{
+    text-align:center;
+    color:var(--muted);
+    font-size:.95rem;
+  }
+
+  .signature .script{
+    display:block;
+    margin-top:4px;
+    font-family:'Parisienne', cursive;
+    font-size:1.7rem;
+    color:var(--gold);
+  }
+
+  #toast{
+    position:fixed;
+    bottom:26px;
+    left:50%;
+    transform:translateX(-50%);
+    background:rgba(26,14,28,.95);
+    border:1px solid var(--gold);
+    padding:11px 22px;
+    border-radius:999px;
+    font-size:.88rem;
+    color:var(--cream);
+    display:none;
+    z-index:999;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration:.001ms !important; transition-duration:.001ms !important; }
+  }
+
+  @media (max-width:480px){
+    .letter{ padding:28px 20px; }
+    .greeting{ font-size:1.6rem; }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="fireflies"></canvas>
+
+<main class="stage">
+
+  <div class="envelope" id="envelope" tabindex="0" role="button" aria-label="Open the letter">
+    <div class="envelope-back"></div>
+    <div class="envelope-front"></div>
+    <div class="envelope-flap"><div class="seal">A</div></div>
+  </div>
+  <p class="envelope-hint" id="hint">tap the seal to open it</p>
+
+  <section class="letter" id="letter">
+    <p class="greeting">My dearest Alishba,</p>
+    <p class="letter-body" id="letterBody"></p>
+
+    <div class="reasons" id="reasons">
+      <button class="reason-nav" id="prevReason" aria-label="Previous reason">&#8249;</button>
+      <div class="reason-card" id="reasonCard">
+        <p class="reason-label">reason no. <span id="reasonIndex">1</span></p>
+        <p class="reason-text" id="reasonText"></p>
+      </div>
+      <button class="reason-nav" id="nextReason" aria-label="Next reason">&#8250;</button>
+    </div>
+
+    <div class="heart-wrap">
+      <button class="heart-btn" id="heartBtn" aria-label="Send love">
+        <span class="heart-shape"></span>
+      </button>
+    </div>
+
+    <p class="signature">Forever yours,<span class="script">Ahad</span></p>
+  </section>
+
+</main>
+
+<div id="toast"></div>
+
+<script>
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------- Toast ---------- */
+  function showToast(text){
+    const t = document.getElementById('toast');
+    t.textContent = text;
+    t.style.display = 'block';
+    clearTimeout(showToast._id);
+    showToast._id = setTimeout(()=>{ t.style.display='none'; }, 2600);
+  }
+
+  /* ---------- Web Audio chime ---------- */
+  let audioCtx = null;
+  function playTone(freq, dur=1.0, offset=0, gainPeak=0.28){
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const now = audioCtx.currentTime + offset;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(freq, now);
+    gain.gain.setValueAtTime(0.0001, now);
+    gain.gain.exponentialRampToValueAtTime(gainPeak, now + 0.04);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + dur);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start(now);
+    osc.stop(now + dur);
+  }
+
+  /* ---------- Envelope open ---------- */
+  const envelope = document.getElementById('envelope');
+  const hint = document.getElementById('hint');
+  const letter = document.getElementById('letter');
+
+  function openEnvelope(){
+    if (envelope.classList.contains('open')) return;
+    envelope.classList.add('open');
+    hint.style.opacity = '0';
+    [493.88, 587.33, 659.25].forEach((f,i)=> playTone(f, 1.0, i*0.12, 0.18));
+    setTimeout(()=>{
+      envelope.classList.add('hidden');
+      letter.classList.add('visible');
+      startTypewriter();
+    }, 700);
+  }
+
+  envelope.addEventListener('click', openEnvelope);
+  envelope.addEventListener('keydown', (e)=>{
+    if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); openEnvelope(); }
+  });
+
+  /* ---------- Typewriter ---------- */
+  const letterText = "I don't think I've told you enough how much lighter the world feels with you in it. You turn ordinary moments, a slow drive, a bad day, a quiet Tuesday, into things I actually want to remember. I love how fully you feel everything, how fiercely loyal you are to the people you care about, and how even your silence tells me exactly where I stand with you. Whatever comes next, I just want to be the one standing next to you for it.";
+
+  function startTypewriter(){
+    const el = document.getElementById('letterBody');
+    el.textContent = '';
+    if (reduceMotion){
+      el.textContent = letterText;
+      revealReasons();
+      return;
+    }
+    const cursor = document.createElement('span');
+    cursor.className = 'cursor';
+    cursor.textContent = '\u00A0';
+    let i = 0;
+    const interval = setInterval(()=>{
+      el.textContent = letterText.slice(0, i);
+      el.appendChild(cursor);
+      i++;
+      if (i > letterText.length){
+        clearInterval(interval);
+        cursor.remove();
+        revealReasons();
+      }
+    }, 20);
+  }
+
+  function revealReasons(){
+    document.getElementById('reasons').classList.add('visible');
+    showReason(0);
+  }
+
+  /* ---------- Reasons carousel ---------- */
+  const reasons = [
+    "The way you say my name right before you're about to tease me.",
+    "How you remember the small things I mention once and forget I said.",
+    "The way you fight for the people you love, no exceptions.",
+    "Your laugh, especially the one you try to hold in and can't.",
+    "How safe it feels to just be myself around you."
+  ];
+  let reasonIdx = 0;
+
+  function showReason(idx){
+    document.getElementById('reasonText').textContent = reasons[idx];
+    document.getElementById('reasonIndex').textContent = idx + 1;
+  }
+
+  function changeReason(dir){
+    const card = document.getElementById('reasonCard');
+    reasonIdx = (reasonIdx + dir + reasons.length) % reasons.length;
+    if (reduceMotion){ showReason(reasonIdx); return; }
+    card.classList.add('flip');
+    setTimeout(()=>{
+      showReason(reasonIdx);
+      card.classList.remove('flip');
+    }, 220);
+  }
+
+  document.getElementById('prevReason').addEventListener('click', ()=> changeReason(-1));
+  document.getElementById('nextReason').addEventListener('click', ()=> changeReason(1));
+
+  /* ---------- Heart burst ---------- */
+  document.getElementById('heartBtn').addEventListener('click', (e)=>{
+    [523.25, 659.25, 783.99].forEach((f,i)=> playTone(f, 0.9, i*0.1, 0.16));
+    showToast('sending love your way \u2764');
+    const wrap = document.querySelector('.heart-wrap');
+    for (let i=0; i<7; i++){
+      const s = document.createElement('span');
+      s.className = 'spark';
+      s.textContent = '\u2665';
+      s.style.left = (46 + Math.random()*20 - 10) + '%';
+      s.style.color = Math.random() > 0.5 ? 'var(--gold)' : 'var(--blush)';
+      s.style.setProperty('--dx', (Math.random()*60 - 30) + 'px');
+      wrap.appendChild(s);
+      setTimeout(()=> s.remove(), 1500);
+    }
+  });
+
+  /* ---------- Fireflies background ---------- */
+  const canvas = document.getElementById('fireflies');
+  const ctx = canvas.getContext('2d');
+  let w, h, flies = [];
+
+  function resize(){
+    w = canvas.width = window.innerWidth;
+    h = canvas.height = window.innerHeight;
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  class Firefly{
+    constructor(){ this.reset(true); }
+    reset(initial){
+      this.x = Math.random() * w;
+      this.y = initial ? Math.random() * h : h + 10;
+      this.r = Math.random() * 1.6 + 0.8;
+      this.speed = Math.random() * 0.35 + 0.1;
+      this.drift = Math.random() * 0.4 - 0.2;
+      this.phase = Math.random() * Math.PI * 2;
+    }
+    update(){
+      this.y -= this.speed;
+      this.x += this.drift;
+      this.phase += 0.04;
+      if (this.y < -10) this.reset(false);
+    }
+    draw(){
+      const glow = (Math.sin(this.phase) + 1) / 2;
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(232, 179, 132, ${0.25 + glow * 0.5})`;
+      ctx.fill();
+    }
+  }
+
+  for (let i = 0; i < 40; i++) flies.push(new Firefly());
+
+  function animate(){
+    ctx.clearRect(0, 0, w, h);
+    flies.forEach(f => { f.update(); f.draw(); });
+    requestAnimationFrame(animate);
+  }
+
+  if (!reduceMotion){ animate(); }
+  else { flies.forEach(f => f.draw()); }
+</script>
+</body>
+</html>
